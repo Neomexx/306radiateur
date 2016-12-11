@@ -20,15 +20,15 @@ def transvection(A, Y, i, j, m):
     Y[i] = Y[i] + m * Y[j]
 
 def gauss_matrix(matrix_A, n, ir, jr):
-    matrix_F = [0 for x in range(n**2)]
-    matrix_Y = [0 for x in range(n**2)]
+    matrix_F = [0.0 for x in range(n**2)]
+    matrix_Y = [0.0 for x in range(n**2)]
     matrix_Y[ir * n + jr] = -300
     for i in range(0, len(matrix_A) - 1):
         j = partial_pivot_y(matrix_A, i)
         matrix_A[i],matrix_A[j] = matrix_A[j],matrix_A[i]
         matrix_Y[i],matrix_Y[j] = matrix_Y[j],matrix_Y[i]
         for k in range(i + 1, len(matrix_A)):
-            transvection(matrix_A, matrix_Y, k, i, -float(matrix_A[k][i]) / float(matrix_A[i][i]))
+            transvection(matrix_A, matrix_Y, k, i, (float(matrix_A[k][i]) * - 1.0) / float(matrix_A[i][i]))
     for i in range(len(matrix_A) - 1, -1, -1):
         for k in range(i + 1, len(matrix_A)):
             matrix_Y[i] = matrix_Y[i] - float(matrix_A[i][k]) * matrix_F[k]
@@ -44,7 +44,7 @@ def set_zero_to_n(matrix, s, t):
     for i in range(s, t):
         matrix[i][i] = 1
 
-def set_np1_to_twonm1(matrix, n, offset_y):
+def set_matrix_A(matrix, n, offset_y):
     y = 0
     for i in range(n + 1 + offset_y, 2 * n - 1 + offset_y):
         x = 0
@@ -60,28 +60,13 @@ def set_np1_to_twonm1(matrix, n, offset_y):
     set_zero_to_n(matrix, 2*n - 1 + offset_y, 2*n + 1 + offset_y)
     return y + 2
 
-def set_np1_to_twonm3(matrix, n):
-    y = 0
-    for i in range(n**2-n+1 - n, n**2-1 - n):
-        x = 0
-        xn = 0
-        point = [n**2-3*n+1+y, n**2-2*n+y, n**2-2*n+1+y, n**2-2*n+2+y, n**2-n+1+y]
-        coeff = [1, 1, -4, 1, 1]
-        for elem in matrix[i]:
-            if x in point:
-                matrix[i][x] = int((1 / H**2) * (coeff[xn]))
-                xn = xn + 1
-            x = x + 1
-        y = y + 1
-
 def create_matrix(n):
     matrix = [[0 for x in range(n**2)] for y in range(n**2)]
     set_zero_to_n(matrix, 0, n + 1)
     offset_y = 0
-    while offset_y + n < n**2-n+1 - n:
-        offset_y = offset_y + set_np1_to_twonm1(matrix, n, offset_y)
-    set_np1_to_twonm3(matrix, n)
-    set_zero_to_n(matrix, n**2-1 - n, n**2)
+    while offset_y + n < n**2-1 - n:
+        offset_y = offset_y + set_matrix_A(matrix, n, offset_y)
+    set_zero_to_n(matrix, n + offset_y, n**2)
     return matrix
 
 def option_one(n, ir, jr):
