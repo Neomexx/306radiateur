@@ -8,92 +8,37 @@ import sys
 H = 0.5
 #Define var END
 
-# def partial_pivot_y(matrix_A, j):
-#     y = j
-#     for i in range(j, len(matrix_A)):
-#         if abs(matrix_A[i][j]) > abs(matrix_A[y][j]):
-#             y = i
-#     return y
+def partial_pivot_y(matrix_A, j):
+    y = j
+    for i in range(j, len(matrix_A)):
+        if abs(matrix_A[i][j]) > abs(matrix_A[y][j]):
+            y = i
+    return y
 
-# def transvection(A, Y, i, j, m):
-#     A[i] = [a + b for a, b in zip(A[i], [x * m for x in A[j]])]
-#     Y[i] = Y[i] + m * Y[j]
+def transvection(A, Y, i, j, m):
+    A[i] = [a + b for a, b in zip(A[i], [x * m for x in A[j]])]
+    Y[i] = Y[i] + m * Y[j]
 
-# def gauss_matrix(matrix_A, n, ir, jr):
-#     matrix_F = [0 for x in range(n**2)]
-#     matrix_Y = [0 for x in range(n**2)]
-#     matrix_Y[ir * n + jr] = -300
-#     for i in range(0, len(matrix_A) - 1):
-#         j = partial_pivot_y(matrix_A, i)
-#         matrix_A[i],matrix_A[j] = matrix_A[j],matrix_A[i]
-#         matrix_Y[i],matrix_Y[j] = matrix_Y[j],matrix_Y[i]
-#         for k in range(i + 1, len(matrix_A)):
-#             transvection(matrix_A, matrix_Y, k, i, -float(matrix_A[k][i]) / float(matrix_A[i][i]))
-#     for i in range(len(matrix_A) - 1, -1, -1):
-#         for k in range(i + 1, len(matrix_A)):
-#             matrix_Y[i] = matrix_Y[i] - float(matrix_A[i][k]) * matrix_F[k]
-#         matrix_F[i] = matrix_Y[i] / float(matrix_A[i][i])
-#     return matrix_F
-
-# lukas
-def partial(A, j0):
-    l = j0
-    for i in range(j0, len(A)):
-        if abs(A[i][j0]) > abs(A[l][j0]):
-            l = i
-    return l
-
-def swap(A, Y, i, j):
-    C = A[i]
-    L = Y[i]
-    A[i] = A[j]
-    Y[i] = Y[j]
-    A[j] = C
-    Y[j] = L
-
-def line_add(line1, line2):
-    line_ret = []
-    for i in range(0, len(line1)):
-        line_ret.append(line1[i] + line2[i])
-    return line_ret
-
-def line_fact(k, line):
-    line_ret = []
-    for i in range(0, len(line)):
-        line_ret.append(line[i] * k)
-    return line_ret
-
-def transvection(A, Y, i, j, mu):
-    A[i] = line_add(A[i], line_fact(mu, A[j]))
-    Y[i] = Y[i] + mu * Y[j]
-
-def gauss_matrix(A, N, ir, jr):
-    X = []
-    for i in range(0, len(A)):
-        X.append(0)
-    Y = []
-    for i in range(0, N):
-        for j in range(0, N):
-            if i == ir and j == jr:
-                Y.append(float(-300))
-            else:
-                Y.append(float(0))
-    for i in range(0, len(A) - 1):
-        j = partial(A, i)
-        swap(A, Y, i, j)
-        for k in range(i + 1, len(A)):
-            transvection(A, Y, k, i, -float(A[k][i]) / float(A[i][i]))
-    for i in range(len(A) - 1, -1, -1):
-        for k in range(i + 1, len(A)):
-            Y[i] = Y[i] - float(A[i][k]) * X[k]
-        X[i] = Y[i] / float(A[i][i])
-    return X
-# lukas end
+def gauss_matrix(matrix_A, n, ir, jr):
+    matrix_F = [0 for x in range(n**2)]
+    matrix_Y = [0 for x in range(n**2)]
+    matrix_Y[ir * n + jr] = -300
+    for i in range(0, len(matrix_A) - 1):
+        j = partial_pivot_y(matrix_A, i)
+        matrix_A[i],matrix_A[j] = matrix_A[j],matrix_A[i]
+        matrix_Y[i],matrix_Y[j] = matrix_Y[j],matrix_Y[i]
+        for k in range(i + 1, len(matrix_A)):
+            transvection(matrix_A, matrix_Y, k, i, -float(matrix_A[k][i]) / float(matrix_A[i][i]))
+    for i in range(len(matrix_A) - 1, -1, -1):
+        for k in range(i + 1, len(matrix_A)):
+            matrix_Y[i] = matrix_Y[i] - float(matrix_A[i][k]) * matrix_F[k]
+        matrix_F[i] = matrix_Y[i] / float(matrix_A[i][i])
+    return matrix_F
 
 def print_matrix(matrix):
     for line in matrix:
         sarr = [str(elem) for elem in line]
-        print(' '.join(sarr))
+        print('\t'.join(sarr))
     # for line in matrix:
     #     for elem in line:
     #         if elem != -16:
